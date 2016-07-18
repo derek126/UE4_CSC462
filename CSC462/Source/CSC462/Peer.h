@@ -13,8 +13,9 @@ UCLASS()
 class CSC462_API APeer : public AStaticMeshActor
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+public:
+
+	UPROPERTY(BlueprintReadWrite, Category = Paxos)
+	bool bIsActive = true;
 };
