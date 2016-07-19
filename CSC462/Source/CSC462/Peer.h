@@ -18,4 +18,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = Paxos)
 	bool bIsActive = true;
+
+	/**
+	* The function handles the peer receiving the packet
+	*/
+	void Receive(const struct FPacketData& Data);
 };
