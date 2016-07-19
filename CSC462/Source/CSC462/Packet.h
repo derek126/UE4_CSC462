@@ -7,6 +7,18 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSendPacket);
 
+namespace FPacketType
+{
+	static const FString START_OPERATION = "START_OPERATION";
+	static const FString PROPOSE = "PROPOSE";
+	static const FString PROPOSE_OK = "PROPOSE_OK";
+	static const FString ACCEPT = "ACCEPT";
+	static const FString ACCEPT_OK = "ACCEPT_OK";
+	static const FString DECIDE = "DECIDE";
+	static const FString DECIDE_OK = "PROPOSE";
+	static const FString END_OPERATION = "PROPOSE";
+}
+
 UENUM(BlueprintType)
 enum class EPacketSender : uint8
 {
@@ -20,10 +32,16 @@ struct FPacketData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
-	class AClient* Client;
+	class AClient* Client; // Starting client
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
-	class APeer* Peer;
+	class APeer* Peer; // The first peer the client sent the packet to
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
+	class APeer* DestinationPeer; // The current destination of this packet
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
+	FString Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
 	EPacketSender Sender;
@@ -50,14 +68,14 @@ public:
 	*/
 	void Send(const FPacketData& Data);
 
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = Paxos)
+	FPacketData Data;
+
 	/**
 	* Called via blueprints after pack has arrived
 	*/
 	UFUNCTION(BlueprintCallable, Category = Paxos)
 	void Arrive();
-
-protected:
-
-	UPROPERTY(BlueprintReadOnly, Category = Paxos)
-	FPacketData Data;
 };

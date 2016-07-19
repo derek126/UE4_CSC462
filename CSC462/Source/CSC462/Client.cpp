@@ -25,29 +25,19 @@ void AClient::BeginPlay()
 	}
 }
 
-// Called every frame
-void AClient::Tick(float DeltaSeconds)
+void AClient::StartOperation()
 {
-	Super::Tick(DeltaSeconds);
-}
+	int32 Index = FMath::RandRange(0, Peers.Num() - 1);
 
-void AClient::SendPacket(APeer* Peer)
-{
 	const FVector MyLocation = GetActorLocation();
 	APacket* Packet = GetWorld()->SpawnActor<APacket>(PacketBP, MyLocation, FRotator(0));
 
 	FPacketData Data;
 	Data.Client = this;
-	Data.Peer = Peer;
+	Data.Peer = Peers[Index];
+	Data.DestinationPeer = Peers[Index];
 	Data.Sender = EPacketSender::CLIENT;
+	Data.Type = FPacketType::START_OPERATION;
 
 	Packet->Send(Data);
-}
-
-void AClient::SendPackets()
-{
-	for (APeer* Peer : Peers) 
-	{
-		SendPacket(Peer);
-	}
 }

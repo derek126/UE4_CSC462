@@ -16,12 +16,11 @@ class CSC462_API AClient : public AStaticMeshActor
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called every frame
-	virtual void Tick(float DeltaSeconds) override;
-
 public: 
 
 	AClient();
+
+protected:
 
 	/**
 	* Reference for the packet type to spawn
@@ -35,12 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Paxos)
 	TArray<class APeer*> Peers;
 
-	//DEBUG
-	UFUNCTION(BlueprintCallable, Category = Paxos)
-	void SendPackets();
-
 	/**
-	* Spawns a packet and initializes it
+	* Begins the process by sending the intitial packet to a paxos peer
 	*/
-	void SendPacket(class APeer* Peer);
+	UFUNCTION(BlueprintCallable, Category = Paxos)
+	void StartOperation();
 };

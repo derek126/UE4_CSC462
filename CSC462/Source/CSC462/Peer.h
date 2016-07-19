@@ -16,11 +16,13 @@ class CSC462_API APeer : public AStaticMeshActor
 
 public:
 
-	UPROPERTY(BlueprintReadWrite, Category = Paxos)
-	bool bIsActive = true;
-
 	/**
 	* The function handles the peer receiving the packet
 	*/
 	void Receive(const struct FPacketData& Data);
+
+protected:
+
+	UPROPERTY(BlueprintReadWrite, Category = Paxos)
+	bool bIsActive = true;
 };
