@@ -15,12 +15,12 @@ namespace FPacketType
 	static const FString ACCEPT = "ACCEPT";
 	static const FString ACCEPT_OK = "ACCEPT_OK";
 	static const FString DECIDE = "DECIDE";
-	static const FString DECIDE_OK = "PROPOSE";
-	static const FString END_OPERATION = "PROPOSE";
+	static const FString DECIDE_OK = "DECIDE_OK";
+	static const FString END_OPERATION = "END_OPERATION";
 }
 
 UENUM(BlueprintType)
-enum class EPacketSender : uint8
+enum class EPacketSendTo : uint8
 {
 	CLIENT,
 	PEER
@@ -44,7 +44,7 @@ struct FPacketData
 	FString Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
-	EPacketSender Sender;
+	EPacketSendTo SendTo;
 };
 
 /**

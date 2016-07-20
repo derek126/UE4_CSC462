@@ -20,7 +20,14 @@ public:
 
 	AClient();
 
+	/**
+	* The function handles the client receiving the packet
+	*/
+	void Receive(struct FPacketData Data);
+
 protected:
+
+	bool bOperationInProgress = false;
 
 	/**
 	* Reference for the packet type to spawn

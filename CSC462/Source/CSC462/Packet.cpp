@@ -3,19 +3,25 @@
 #include "CSC462.h"
 #include "Packet.h"
 #include "Peer.h"
+#include "Client.h"
 
 void APacket::Send(const FPacketData& Data)
 {
 	this->Data = Data;
-	OnSend.Broadcast();
+	OnSend.Broadcast(); // Fire blueprint event
 }
 
 void APacket::Arrive()
 {
-	if (Data.Sender == EPacketSender::CLIENT)
+	if (Data.SendTo == EPacketSendTo::PEER)
 	{
-		Data.Peer->Receive(Data);
+		Data.DestinationPeer->Receive(Data);
+	}
+	else
+	{
+		Data.Client->Receive(Data);
 	}
 
+	// Destroy the packet after the data is transferred
 	this->Destroy();
 }
