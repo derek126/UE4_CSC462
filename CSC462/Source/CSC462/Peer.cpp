@@ -1,6 +1,7 @@
 // Copyright 2016 Derek Fletcher, All Rights Reserved.
 
 #include "CSC462.h"
+#include "Client.h"
 #include "Packet.h"
 #include "Peer.h"
 
@@ -25,51 +26,125 @@ void APeer::Receive(FPacketData Data)
 {
 	if (Data.Type == FPacketType::START_OPERATION)
 	{
-		SendProposals(Data);
+		if (bIsAlive)
+		{
+			SendProposals(Data);
+		}
+		else
+		{
+			Data.bIsError = true;
+			Data.Client->Receive(Data);
+		}
 	}
 	else if (Data.Type == FPacketType::PROPOSE)
 	{
 		Data.Type = FPacketType::PROPOSE_OK;
-		Data.DestinationPeer = Data.Peer;
-		SendPacket(Data);
+		if (bIsAlive) 
+		{
+			Data.DestinationPeer = Data.Peer;
+			SendPacket(Data);
+		}
+		else
+		{
+			Data.bIsError = true;
+			Data.Peer->Receive(Data);
+		}
 	}
 	else if (Data.Type == FPacketType::ACCEPT)
 	{
 		Data.Type = FPacketType::ACCEPT_OK;
-		Data.DestinationPeer = Data.Peer;
-		SendPacket(Data);
+		if (bIsAlive)
+		{
+			Data.DestinationPeer = Data.Peer;
+			SendPacket(Data);
+		}
+		else
+		{
+			Data.bIsError = true;
+			Data.Peer->Receive(Data);
+		}
 	}
 	else if (Data.Type == FPacketType::DECIDE)
 	{
 		Data.Type = FPacketType::DECIDE_OK;
-		Data.DestinationPeer = Data.Peer;
-		SendPacket(Data);
+		if (bIsAlive)
+		{
+			Data.DestinationPeer = Data.Peer;
+			SendPacket(Data);
+		}
+		else
+		{
+			Data.bIsError = true;
+			Data.Peer->Receive(Data);
+		}
 	}
 	else if (Data.Type == FPacketType::PROPOSE_OK)
 	{
 		P_OK++;
+		if (Data.bIsError)
+		{
+			bNotMajority = true;
+		}
+
 		if (P_OK == (Peers.Num() / 2) + 1)
 		{
-			SendAccepts(Data);
+			if (bNotMajority)
+			{
+				bNotMajority = false;
+				Data.bIsError = false;
+				SendProposals(Data);
+			}
+			else
+			{
+				SendAccepts(Data);
+			}
 		}
 	}
 	else if (Data.Type == FPacketType::ACCEPT_OK)
 	{
 		A_OK++;
+		if (Data.bIsError)
+		{
+			bNotMajority = true;
+		}
+
 		if (A_OK == (Peers.Num() / 2) + 1)
 		{
-			SendDecides(Data);
+			if (bNotMajority)
+			{
+				bNotMajority = false;
+				Data.bIsError = false;
+				SendAccepts(Data);
+			}
+			else
+			{
+				SendDecides(Data);
+			}
 		}
 	}
 	else if (Data.Type == FPacketType::DECIDE_OK)
 	{
 		D_OK++;
+		if (Data.bIsError)
+		{
+			bNotMajority = true;
+		}
+
 		if (D_OK == Peers.Num())
 		{
-			D_OK = 0;
-			Data.SendTo = EPacketSendTo::CLIENT;
-			Data.Type = FPacketType::END_OPERATION;
-			SendPacket(Data);
+			if (bNotMajority)
+			{
+				bNotMajority = false;
+				Data.bIsError = false;
+				SendDecides(Data);
+			}
+			else
+			{
+				D_OK = 0;
+				Data.SendTo = EPacketSendTo::CLIENT;
+				Data.Type = FPacketType::END_OPERATION;
+				SendPacket(Data);
+			}
 		}
 	}
 }

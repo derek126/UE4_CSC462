@@ -33,6 +33,11 @@ void AClient::Receive(struct FPacketData Data)
 	{
 		bOperationInProgress = false;
 	}
+	else if (Data.bIsError && Data.Type == FPacketType::START_OPERATION)
+	{
+		bOperationInProgress = false;
+		StartOperation();
+	}
 }
 
 void AClient::StartOperation()

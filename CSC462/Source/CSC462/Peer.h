@@ -27,6 +27,11 @@ public:
 protected:
 
 	/**
+	* Used as a flag to tell when a packet was lost
+	*/
+	bool bNotMajority = false;
+
+	/**
 	* Is this node alive or dead?
 	*/
 	UPROPERTY(BlueprintReadWrite, Category = Paxos)

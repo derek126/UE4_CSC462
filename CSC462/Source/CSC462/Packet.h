@@ -45,6 +45,8 @@ struct FPacketData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Paxos)
 	EPacketSendTo SendTo;
+
+	bool bIsError = false;
 };
 
 /**
